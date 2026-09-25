@@ -42,3 +42,6 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
+
+"python-jose[cryptography]>=3.3.0",
+"bcrypt>=4.0.1",

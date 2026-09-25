@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     database_url: str = "sqlite+aiosqlite:///./rocketlab.db"
     backend_cors_origins: list[str] = ["http://localhost:5173"]
     log_level: str = "INFO"
+    secret_key: str = "change-me"
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+    admin_email: str = "admin@rocketlab.dev"
+    admin_password_hash: str = ""
 
 
 @lru_cache
