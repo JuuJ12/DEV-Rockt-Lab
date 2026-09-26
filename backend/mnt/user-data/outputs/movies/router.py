@@ -31,11 +31,8 @@ from app.movies.schemas import (
     ReviewOut,
 )
 
-# Todo esse roteador exige o token do Administrador — mesmo padrão que você
-# usava no order_router antigo (dependencies=[Depends(verificar_token)]).
 movies_router = APIRouter(dependencies=[Depends(get_current_admin)])
 
-# Carrega o filme já com tudo que os schemas de saída precisam.
 MOVIE_EAGER_LOAD = (
     selectinload(DimMovie.genres),
     selectinload(DimMovie.people),
@@ -74,7 +71,7 @@ async def _get_or_create_genre(session: AsyncSession, nome: str) -> DimGenre:
     if genre is None:
         genre = DimGenre(nome_genero=nome)
         session.add(genre)
-        await session.flush()  # garante que o genre já tem PK antes de linkar
+        await session.flush()
     return genre
 
 
@@ -189,7 +186,7 @@ async def adicionar_avaliacao(
 ):
     movie = await _get_movie_or_404(session, id_filme)
 
-    nota_escala_10 = payload.nota * 2  # 1-5 estrelas -> 0-10, ver ReviewCreate
+    nota_escala_10 = payload.nota * 2
     review = MovieReview(
         sk_movie_id=movie.sk_movie_id,
         nome=payload.nome,

@@ -22,7 +22,6 @@ import csv
 import sqlite3
 from pathlib import Path
 
-# Ordem importa: tabelas "pai" (dimensões) antes das que têm FK pra elas.
 LOAD_PLAN = [
     ("dim_companies.csv", "dim_companies", ["sk_company_id", "nome_produtora"]),
     ("dim_genres.csv", "dim_genres", ["sk_genre_id", "nome_genero"]),
@@ -59,7 +58,6 @@ LOAD_PLAN = [
     ),
 ]
 
-# Colunas numéricas: string vazia no CSV vira NULL, não "".
 NUMERIC_COLUMNS = {
     "ano_lancamento", "duracao_minutos", "orcamento_usd", "receita_usd", "lucro_usd",
     "orcamento_brl", "receita_brl", "lucro_brl", "popularidade", "nota_tmdb", "qtd_tmdb",

@@ -1,5 +1,5 @@
 from app.db.base import Base
-from app.movies import models  # noqa: F401  Registra os modelos ORM.
+from app.movies import models
 
 
 def test_movie_schema_registers_expected_tables() -> None:

@@ -6,8 +6,6 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
-# tokenUrl é só o endereço que aparece no /docs pro botão "Authorize";
-# quem decide se o token é válido é a função abaixo, não essa linha.
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.api_v1_prefix}/auth/login")
 
 

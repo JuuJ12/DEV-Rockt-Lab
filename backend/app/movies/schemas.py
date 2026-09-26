@@ -28,9 +28,6 @@ class PersonOut(BaseModel):
     tipo_pessoa: str
 
 
-# ---------- Avaliações ----------
-
-
 class ReviewCreate(BaseModel):
     """Entrada da rota de criar avaliação.
 
@@ -49,9 +46,6 @@ class ReviewOut(BaseModel):
     nota: float
     comentario: str
     created_at: datetime
-
-
-# ---------- Filme: entrada (criar/atualizar) ----------
 
 
 class MovieCreate(BaseModel):
@@ -80,9 +74,6 @@ class MovieUpdate(BaseModel):
     sinopse: str | None = Field(default=None, max_length=4000)
     url_poster: str | None = None
     url_backdrop: str | None = None
-
-
-# ---------- Filme: saída ----------
 
 
 class MovieListItem(BaseModel):

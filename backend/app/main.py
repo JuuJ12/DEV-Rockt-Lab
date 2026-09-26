@@ -18,7 +18,6 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Libera recursos de infraestrutura quando a aplicação é encerrada."""
 
     del app
-    # A criação/evolução do schema é responsabilidade exclusiva do Alembic.
     yield
     await engine.dispose()
 
