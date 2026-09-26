@@ -19,18 +19,6 @@ htmlcov/
 .DS_Store
 .vscode/
 
-bases_atv_dev1
-
-bases_atv_dev2
-bases_atv_dev_2/bridge_movie_company.csv
-bases_atv_dev_2/bridge_movie_genre.csv
-bases_atv_dev_2/bridge_movie_person.csv
-bases_atv_dev_2/fact_movies_performance.csv
-bases_atv_dev_2/movies_reviews.csv
 .gitignore
-backend/scripts/bases_atv_dev_2/bridge_movie_company.csv
 .gitignore
-backend/scripts/bases_atv_dev_2/bridge_movie_genre.csv
-backend/scripts/bases_atv_dev_2/bridge_movie_person.csv
-backend/scripts/bases_atv_dev_2/fact_movies_performance.csv
-backend/scripts/bases_atv_dev_2/movies_reviews.csv
+.gitignore
