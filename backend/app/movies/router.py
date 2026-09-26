@@ -14,7 +14,7 @@ import math
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -42,6 +42,7 @@ MOVIE_EAGER_LOAD = (
     selectinload(DimMovie.reviews),
     selectinload(DimMovie.reviews_summary),
 )
+TITLE_TRIM_CHARACTERS = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
 
 
 def _to_list_item(movie: DimMovie) -> MovieListItem:
@@ -96,20 +97,50 @@ async def listar_filmes(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
     busca: str | None = Query(default=None, description="Busca por título"),
+    genero: str | None = Query(default=None),
+    ano_min: int | None = Query(default=None, ge=1888, le=2100),
+    ano_max: int | None = Query(default=None, ge=1888, le=2100),
+    status_filme: str | None = Query(default=None),
+    ordenar: str = Query(default="titulo", pattern="^(titulo|ano_asc|ano_desc)$"),
 ):
     """Catálogo paginado, com busca opcional por título."""
 
     base_stmt = select(DimMovie)
     if busca:
         base_stmt = base_stmt.where(DimMovie.titulo.ilike(f"%{busca}%"))
+    if genero:
+        base_stmt = base_stmt.join(DimMovie.genres).where(DimGenre.nome_genero == genero)
+    if ano_min is not None:
+        base_stmt = base_stmt.where(DimMovie.ano_lancamento >= ano_min)
+    if ano_max is not None:
+        base_stmt = base_stmt.where(DimMovie.ano_lancamento <= ano_max)
+    if status_filme:
+        base_stmt = base_stmt.where(DimMovie.status_filme == status_filme)
 
     total = (
         await session.execute(select(func.count()).select_from(base_stmt.subquery()))
     ).scalar_one()
 
+    if ordenar == "ano_desc":
+        ordering = (DimMovie.ano_lancamento.desc().nullslast(), func.lower(DimMovie.titulo))
+    elif ordenar == "ano_asc":
+        ordering = (DimMovie.ano_lancamento.asc().nullslast(), func.lower(DimMovie.titulo))
+    else:
+        ordering = (
+            case(
+                (
+                    func.trim(DimMovie.titulo, TITLE_TRIM_CHARACTERS) == "",
+                    1,
+                ),
+                else_=0,
+            ),
+            func.lower(func.trim(DimMovie.titulo, TITLE_TRIM_CHARACTERS)),
+            func.lower(DimMovie.titulo),
+        )
+
     stmt = (
         base_stmt.options(*MOVIE_EAGER_LOAD)
-        .order_by(DimMovie.titulo)
+        .order_by(*ordering)
         .offset((page - 1) * page_size)
         .limit(page_size)
     )
@@ -122,6 +153,12 @@ async def listar_filmes(
         page_size=page_size,
         total_pages=max(1, math.ceil(total / page_size)),
     )
+
+
+@movies_router.get("/genres", response_model=list[str])
+async def listar_generos(session: AsyncSession = Depends(get_db)) -> list[str]:
+    stmt = select(DimGenre.nome_genero).order_by(DimGenre.nome_genero)
+    return list((await session.execute(stmt)).scalars().all())
 
 
 @movies_router.get("/{id_filme}", response_model=MovieDetail)
@@ -189,11 +226,10 @@ async def adicionar_avaliacao(
 ):
     movie = await _get_movie_or_404(session, id_filme)
 
-    nota_escala_10 = payload.nota * 2  # 1-5 estrelas -> 0-10, ver ReviewCreate
     review = MovieReview(
         sk_movie_id=movie.sk_movie_id,
         nome=payload.nome,
-        nota=nota_escala_10,
+        nota=payload.nota,
         comentario=payload.comentario,
     )
     session.add(review)
@@ -208,7 +244,7 @@ async def adicionar_avaliacao(
     media_anterior = resumo.nota_media_usuarios or 0
     resumo.qtd_avaliacoes_usuarios = qtd_anterior + 1
     resumo.nota_media_usuarios = round(
-        (media_anterior * qtd_anterior + nota_escala_10) / resumo.qtd_avaliacoes_usuarios, 2
+        (media_anterior * qtd_anterior + payload.nota) / resumo.qtd_avaliacoes_usuarios, 2
     )
 
     await session.commit()

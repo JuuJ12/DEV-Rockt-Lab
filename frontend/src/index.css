@@ -1,0 +1,4 @@
+:root { --ink: #e7eee5; --muted: #9da99d; --line: #354239; --green: #8fc79b; --paper: #171d19; --sidebar: #202a22; --panel: #222d25; --sans: 'Avenir Next', 'Segoe UI', sans-serif; --serif: Georgia, 'Times New Roman', serif; font-family: var(--sans); color: var(--ink); background: var(--paper); font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+body { min-width: 320px; min-height: 100vh; margin: 0; background: var(--paper); }
+#root { min-height: 100vh; }

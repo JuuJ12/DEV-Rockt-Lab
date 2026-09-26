@@ -8,9 +8,12 @@ dependencies = [
     "uvicorn[standard]>=0.32.0",
     "sqlalchemy>=2.0.35",
     "aiosqlite>=0.20.0",
+    "greenlet>=3.0.0",
     "pydantic>=2.9.0",
     "pydantic-settings>=2.5.0",
     "alembic>=1.19.2",
+    "python-jose[cryptography]>=3.3.0",
+    "bcrypt>=4.0.1",
 ]
 
 [project.optional-dependencies]
@@ -42,6 +45,3 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
-
-"python-jose[cryptography]>=3.3.0",
-"bcrypt>=4.0.1",
